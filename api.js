@@ -10,7 +10,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-const PORT = process.env.PORT || 1406;
+const PORT = process.env.PORT || 3306;
 const JWT_SECRET = 'dheenavicky123';
 const TOKEN_EXPIRATION = '1d';
 
@@ -19,10 +19,10 @@ app.listen(PORT, () => {
 });
 
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'vicky',
-    password: 'vicky03.exe',
-    database: 'salesmanagement'
+    host: 'b6sglcjq9ocpqjyudrai-mysql.services.clever-cloud.com',
+    user: 'urdolnnewhrckj0q',
+    password: 'K3PhRmTVpgmdBl9jbQWA',
+    database: 'b6sglcjq9ocpqjyudrai'
 });
 
 db.connect(err => {
