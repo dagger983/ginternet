@@ -3,14 +3,13 @@ const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const mysql = require('mysql');
-const bcrypt = require('bcryptjs');
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
 
-const PORT = process.env.PORT || 3306;
+const PORT = process.env.PORT || 1406;
 const JWT_SECRET = 'dheenavicky123';
 const TOKEN_EXPIRATION = '1d';
 
@@ -62,7 +61,6 @@ app.post("/owner-login", async (req, res) => {
                 return;
             }
 
-
             const token = jwt.sign(
                 { username: owner.owner_name },
                 JWT_SECRET,
@@ -78,14 +76,11 @@ app.post("/owner-login", async (req, res) => {
     }
 });
 
-
 app.post('/employee-register', async (req, res) => {
     const { username, password, mobile_number } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const sql = 'INSERT INTO employee (employee_name, employee_password, employee_number) VALUES (?, ?, ?)';
-    db.query(sql, [username, hashedPassword, mobile_number], (err, result) => {
+    db.query(sql, [username, password, mobile_number], (err, result) => {
         if (err) {
             console.error(err);
             res.status(404).send('Failed to register employee');
@@ -104,11 +99,10 @@ app.post('/employee-login', (req, res) => {
             console.error(err);
             res.status(404).send("User Doesn't Exist");
         } else if (results.length > 0) {
-            const hashedPassword = results[0].password;
-            const passwordMatch = await bcrypt.compare(password, hashedPassword);
+            const storedPassword = results[0].employee_password;
 
-            if (passwordMatch) {
-                const token = jwt.sign({ username: results[0].username }, 'Dheena Vicky', { expiresIn: '1h' });
+            if (password === storedPassword) {
+                const token = jwt.sign({ username: results[0].employee_name }, JWT_SECRET, { expiresIn: '1h' });
                 res.json({ token });
             } else {
                 res.status(400).send('Password did not match');
