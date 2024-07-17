@@ -8,7 +8,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cors({
-    origin: 'http://localhost:5173', // Allow requests from this origin
+    origin: 'https://sri-ganapathi-internet.web.app/', // Allow requests from this origin
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these methods
     allowedHeaders: ['Content-Type', 'Authorization'] // Allow these headers
 }));
@@ -97,7 +97,6 @@ app.post("/owner-login", async (req, res) => {
 app.post('/employee-register', async (req, res) => {
     const { username, password, mobile_number } = req.body;
 
-    // Validation
     if (!username || !password || !mobile_number) {
         return res.status(400).send('Please provide all required fields');
     }
