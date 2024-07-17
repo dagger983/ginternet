@@ -86,12 +86,13 @@ app.post('/employee-register', async (req, res) => {
     }
 
     const sql = 'INSERT INTO employee (employee_name, employee_password, employee_number) VALUES (?, ?, ?)';
-    db.query(sql, [username, password, employeeNumber], (err, result) => {
+    db.query(sql, [username.toLowerCase().split(" ").join(""), password, employeeNumber], (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).send('Failed to register employee');
         } else {
             res.status(201).send('Employee registered successfully');
+            Cookies.set("EmployeeLogin")
         }
     });
 });
@@ -101,7 +102,7 @@ app.post('/employee-login', (req, res) => {
     const { username, password } = req.body;
 
     const sql = 'SELECT * FROM employee WHERE employee_name = ?';
-    db.query(sql, [username], async (err, results) => {
+    db.query(sql, [username.toLowerCase().split(" ").join("")], async (err, results) => {
         if (err) {
             console.error(err);
             res.status(404).send("User Doesn't Exist");
@@ -134,7 +135,7 @@ app.get('/products', (req, res) => {
 app.post('/products-entry', (req, res) => {
     const { product, price } = req.body;
     const query = 'INSERT INTO products (product, price) VALUES (?, ?)';
-    db.query(query, [product, price], (err, result) => {
+    db.query(query, [product,parseInt(price)], (err, result) => {
         if (err) {
             console.error('Error adding product: ' + err);
             res.status(500).json({ error: 'Error adding product' });
