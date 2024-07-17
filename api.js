@@ -32,6 +32,22 @@ db.connect(err => {
     console.log('Connected to MySQL');
 });
 
+app.get('/owner-details/:name', (req, res) => {
+    const ownerName = req.params.name.toLowerCase().split(" ").join("");
+
+    const sql = 'SELECT * FROM owner WHERE owner_name = ?';
+    db.query(sql, [ownerName], (err, results) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Failed to fetch owner details');
+        } else if (results.length === 0) {
+            res.status(404).send('Owner not found');
+        } else {
+            res.status(200).json(results[0]);
+        }
+    });
+});
+
 app.post("/owner-login", async (req, res) => {
     const { username, password } = req.body;
 
