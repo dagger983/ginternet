@@ -8,7 +8,6 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cors({
-    origin: 'https://sri-ganapathi-internet.web.app/', // Allow requests from this origin
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these methods
     allowedHeaders: ['Content-Type', 'Authorization'] // Allow these headers
 }));
