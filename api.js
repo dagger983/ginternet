@@ -31,7 +31,7 @@ db.connect(err => {
     }
     console.log('Connected to MySQL');
 });
-
+ 
 app.get('/owner-details/:name', (req, res) => {
     const ownerName = req.params.name.toLowerCase().split(" ").join("");
 
@@ -95,14 +95,13 @@ app.post("/owner-login", async (req, res) => {
 app.post('/employee-register', async (req, res) => {
     const { username, password, mobile_number } = req.body;
 
-    const employeeNumber = parseInt(mobile_number, 10);
 
     if (isNaN(employeeNumber)) {
         return res.status(400).send('Invalid employee number');
     }
 
     const sql = 'INSERT INTO employee (employee_name, employee_password, employee_number) VALUES (?, ?, ?)';
-    db.query(sql, [username.toLowerCase().split(" ").join(""), password, employeeNumber], (err, result) => {
+    db.query(sql, [username.toLowerCase().split(" ").join(""), password,  mobile_number], (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).send('Failed to register employee');
