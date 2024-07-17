@@ -160,3 +160,18 @@ app.post('/products-entry', (req, res) => {
         res.json({ message: 'Product added successfully', id: result.insertId });
     });
 });
+
+app.put('/products/:id', (req, res) => {
+    const productId = req.params.id;
+    const { product, price } = req.body;
+
+    const query = 'UPDATE products SET product = ?, price = ? WHERE id = ?';
+    db.query(query, [product, parseInt(price), productId], (err, result) => {
+        if (err) {
+            console.error('Error updating product: ' + err);
+            res.status(500).json({ error: 'Error updating product' });
+            return;
+        }
+        res.json({ message: 'Product updated successfully', id: productId });
+    });
+});
