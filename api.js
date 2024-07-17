@@ -79,16 +79,23 @@ app.post("/owner-login", async (req, res) => {
 app.post('/employee-register', async (req, res) => {
     const { username, password, mobile_number } = req.body;
 
+    const employeeNumber = parseInt(mobile_number, 10);
+
+    if (isNaN(employeeNumber)) {
+        return res.status(400).send('Invalid employee number');
+    }
+
     const sql = 'INSERT INTO employee (employee_name, employee_password, employee_number) VALUES (?, ?, ?)';
-    db.query(sql, [username, password, mobile_number], (err, result) => {
+    db.query(sql, [username, password, employeeNumber], (err, result) => {
         if (err) {
             console.error(err);
-            res.status(404).send('Failed to register employee');
+            res.status(500).send('Failed to register employee');
         } else {
             res.status(201).send('Employee registered successfully');
         }
     });
 });
+
 
 app.post('/employee-login', (req, res) => {
     const { username, password } = req.body;
