@@ -7,16 +7,17 @@ const mysql = require('mysql');
 const app = express();
 
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173', // Allow requests from this origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these methods
+    allowedHeaders: ['Content-Type', 'Authorization'] // Allow these headers
+}));
 
 const PORT = process.env.PORT || 1406;
 const JWT_SECRET = 'dheenavicky123';
 const TOKEN_EXPIRATION = '1d';
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
+// MySQL database connection setup
 const db = mysql.createConnection({
     host: 'b6sglcjq9ocpqjyudrai-mysql.services.clever-cloud.com',
     user: 'urdolnnewhrckj0q',
@@ -31,7 +32,8 @@ db.connect(err => {
     }
     console.log('Connected to MySQL');
 });
- 
+
+// Routes
 app.get('/owner-details/:name', (req, res) => {
     const ownerName = req.params.name.toLowerCase().split(" ").join("");
 
@@ -95,19 +97,18 @@ app.post("/owner-login", async (req, res) => {
 app.post('/employee-register', async (req, res) => {
     const { username, password, mobile_number } = req.body;
 
-
-    if (isNaN(employeeNumber)) {
-        return res.status(400).send('Invalid employee number');
+    // Validation
+    if (!username || !password || !mobile_number) {
+        return res.status(400).send('Please provide all required fields');
     }
 
     const sql = 'INSERT INTO employee (employee_name, employee_password, employee_number) VALUES (?, ?, ?)';
-    db.query(sql, [username.toLowerCase().split(" ").join(""), password,  mobile_number], (err, result) => {
+    db.query(sql, [username.toLowerCase().split(" ").join(""), password, mobile_number], (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).send('Failed to register employee');
         } else {
             res.status(201).send('Employee registered successfully');
-            Cookies.set("EmployeeLogin")
         }
     });
 });
@@ -127,7 +128,6 @@ app.get('/employee-details/:name', (req, res) => {
         }
     });
 });
-
 
 app.post('/employee-login', (req, res) => {
     const { username, password } = req.body;
@@ -166,7 +166,7 @@ app.get('/products', (req, res) => {
 app.post('/products-entry', (req, res) => {
     const { product, price } = req.body;
     const query = 'INSERT INTO products (product, price) VALUES (?, ?)';
-    db.query(query, [product,parseInt(price)], (err, result) => {
+    db.query(query, [product, parseInt(price)], (err, result) => {
         if (err) {
             console.error('Error adding product: ' + err);
             res.status(500).json({ error: 'Error adding product' });
@@ -189,4 +189,8 @@ app.put('/products/:id', (req, res) => {
         }
         res.json({ message: 'Product updated successfully', id: productId });
     });
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
