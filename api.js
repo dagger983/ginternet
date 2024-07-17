@@ -97,6 +97,22 @@ app.post('/employee-register', async (req, res) => {
     });
 });
 
+app.get('/employee-details/:name', (req, res) => {
+    const employeeName = req.params.name.toLowerCase().split(" ").join("");
+    
+    const sql = 'SELECT * FROM employee WHERE employee_name = ?';
+    db.query(sql, [employeeName], (err, results) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Failed to fetch employee details');
+        } else if (results.length === 0) {
+            res.status(404).send('Employee not found');
+        } else {
+            res.status(200).json(results[0]);
+        }
+    });
+});
+
 
 app.post('/employee-login', (req, res) => {
     const { username, password } = req.body;
