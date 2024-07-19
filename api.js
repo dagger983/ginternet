@@ -8,15 +8,14 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cors({
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow these methods
-    allowedHeaders: ['Content-Type', 'Authorization'] // Allow these headers
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+    allowedHeaders: ['Content-Type', 'Authorization'] 
 }));
 
 const PORT = process.env.PORT || 1406;
 const JWT_SECRET = 'dheenavicky123';
 const TOKEN_EXPIRATION = '1d';
 
-// MySQL database connection setup
 const db = mysql.createConnection({
     host: 'b6sglcjq9ocpqjyudrai-mysql.services.clever-cloud.com',
     user: 'urdolnnewhrckj0q',
@@ -188,6 +187,22 @@ app.put('/products/:id', (req, res) => {
         res.json({ message: 'Product updated successfully', id: productId });
     });
 });
+
+app.delete('/products/:id', (req, res) => {
+    const productId = req.params.id;
+
+    const query = 'DELETE FROM products WHERE id = ?';
+    db.query(query, [productId], (err, result) => {
+        if (err) {
+            console.error('Error deleting product: ' + err);
+            res.status(500).json({ error: 'Error deleting product' });
+            return;
+        }
+        res.json({ message: 'Product deleted successfully', id: productId });
+    });
+});
+
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
